@@ -24,6 +24,14 @@ impl<T: Debug + Default + Clone> ThreadResult<T> {
             ready: Mutex::new(false),
         }
     }
+    /*--------------------------------------------
+      Unwrapping is appropriate here.  The 
+      operation fails if the Mutex becomes
+      poisoned, due to panic on a thread
+      holding the lock.  But then you can't
+      do much except quit, which the unwrap
+      does for you.
+    --------------------------------------------*/
     pub fn set(&self, t:T) {
         let mut lr = self.ready.lock().unwrap();
         *lr = true;
