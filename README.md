@@ -2,6 +2,8 @@
 ##Support for returning results from threads
 
 ThreadResult<T> is similar to the C++ Future type.  It has no hooks into a run-time like Tokio.  Instead it simply causes main thread access to a result to block until the child thread signals that the result is ready.  Threads needing the result may poll to see if the result is ready rather than blocking. 
+    
+## Implementation of ThreadResult
 ```
 /////////////////////////////////////////////////////////////
 // thread_result::lib.rs - Wait for thread to complete     //
@@ -37,6 +39,7 @@ impl<T: Debug + Default + Clone> ThreadResult<T> {
       do much except quit, which the unwrap
       does for you.
     --------------------------------------------*/
+    /*-- set is called by thread returning result --*/
     pub fn set(&self, t:T) {
         let mut lr = self.ready.lock().unwrap();
         *lr = true;
@@ -44,6 +47,10 @@ impl<T: Debug + Default + Clone> ThreadResult<T> {
         *lrslt = t;
         self.cv.notify_one();
     }
+    /*--------------------------------------------
+      get is called by the thread receiving result
+      - will block if result is not ready
+    --------------------------------------------*/
     pub fn get(&self) -> T {
         let mut rdy = self.ready.lock().unwrap();
         while !*rdy {
@@ -52,12 +59,14 @@ impl<T: Debug + Default + Clone> ThreadResult<T> {
         let rslt = self.result.lock().unwrap();
         rslt.clone()
     }
+    /*-- ready is used to poll for result --*/
     pub fn ready(&self) -> bool {
         *self.ready.lock().unwrap()
     }
 }
 ```
 
+## Code to receive result
 ```
 /////////////////////////////////////////////////////////////
 // thread_result::test1.rs - basic ThreadResult test       //
