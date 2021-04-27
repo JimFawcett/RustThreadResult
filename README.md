@@ -1,21 +1,7 @@
 # RustThreadResult
-Support for returning results from threads
+##Support for returning results from threads
 
-<table>
-    <tr>
-        <td>
-            ```
-            struct MyStruct { .. }
-            ````
-        </td>
-        <td>
-            ```
-            fn main() { ... }
-            ```
-        </td>
-    </tr>
-</table>
-
+ThreadResult<T> is similar to the C++ Future type.  It has no hooks into a run-time like Tokio.  Instead it simply causes main thread access to a result to block until the child thread signals that the result is ready.  Threads needing the result may poll to see if the result is ready rather than blocking. 
 ```
 /////////////////////////////////////////////////////////////
 // thread_result::lib.rs - Wait for thread to complete     //
