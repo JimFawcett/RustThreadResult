@@ -1,6 +1,21 @@
 # RustThreadResult
 Support for returning results from threads
 
+<table>
+    <tr>
+        <td>
+            ```
+            struct MyStruct { .. }
+            ````
+        </td>
+        <td>
+            ```
+            fn main() { ... }
+            ```
+        </td>
+    </tr>
+</table>
+
 ```
 /////////////////////////////////////////////////////////////
 // thread_result::lib.rs - Wait for thread to complete     //
